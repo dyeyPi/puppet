@@ -22,7 +22,7 @@ user { 'monitor':
 }
 
 file { '/home/monitor':
-   ensure => directory,
+   ensure => 'directory',
    owner => 'monitor',
    group => 'devs',
    mode => 0750,
@@ -30,19 +30,27 @@ file { '/home/monitor':
 }
 
 file{'/home/monitor/scripts':
-  mode => 0750,
-  ensure => directory,
+  mode => 'u+rwx',
+  ensure => 'directory',
   owner => 'monitor',
 }
 
-exec{'retrieve_memCheck':
-  command => "/usr/bin/wget -q https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh -O /home/monitor/scripts/memory_check.sh",
+exec{'retrieve_memCheck1':
+  command => "/usr/bin/wget -q https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh",
   creates => "/home/monitor/scripts/memory_check.sh",
 }
 
-file{'/home/monitor/scripts/memory_check.sh':
-  mode => 0750,
-  require => Exec["retrieve_memCheck"],
-  ensure => present,
-  owner => 'monitor',
+exec{'retrieve_memCheck2':
+  command => "/usr/bin/wget -q https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh -O /home/monitor/scripts/memory_check.sh",
 }
+
+file{'/home/monitor/scripts/memory_check.sh':
+  mode => 'u+rwx',
+  ensure => file,
+  recurse => true,
+  owner => 'monitor',
+  require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
+}
+
+
+
