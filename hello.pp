@@ -78,21 +78,21 @@ file{ $srcDir:
 	mode => '0755',
 }
 
-file { "${srcDir}/my_memory_check":
+file { "my_memory_check":
 	ensure => 'link',
 	mode => '0755',
 	owner => $userId,
-	target => "${scriptDir}/memory_check",
+	path => "${srcDir}/my_memory_check",
 	force => yes,
+	target => "${scriptDir}/memory_check",
 }	
-
 
 cron { 'puppet-apply':
 	ensure => present,
-	command => 'bash my_memory_check',
+	command => "${srcDir}/my_memory_check -c 90 -w 60 -e ako@email.com",
   user => $userId,
 	hour => '*',
 	minute => '10',
-	require => File["${srcDir}/my_memory_check"],
+	require => File["my_memory_check"],
 }
 
