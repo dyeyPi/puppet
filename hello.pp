@@ -44,14 +44,14 @@ file { $userDir:
    ensure => directory,
 	 #* => $fileAttributes,
 	owner => $userId,
-	mode => 'u+rwx',
+	mode => '0755',
    require => [User[$userId], Group[devs]],
 }
 
 file{ $scriptDir:
   ensure => directory,
 	owner => $userId,
-	mode => 'u+rwx',
+	mode => '0755',
 }
 
 exec{'retrieve_memCheck1':
@@ -67,7 +67,7 @@ file{ $rawDir:
   ensure => file,
   recurse => true,
 	owner => $userId,
-	mode => 'u+rwx',
+	mode => '0755',
   require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
 }
 
@@ -75,14 +75,21 @@ file{ $srcDir:
   ensure => 'directory',
   #* => $fileAttributes,
 	owner => $userId,
-	mode => 'u+rwx',
+	mode => '0755',
 }
 
+file { "${srcDir}/my_memory_check":
+	ensure => 'link',
+	mode => '0755',
+	owner => $userId,
+	target => "${scriptDir}/memory_check",
+	force => yes,
+}	
+
 cron { 'run-puppet' :
-  command => '/home/monitor/src/my_memory_check',
+  command => '/home/monitor/src/my_memory_check.sh',
   user => 'monitor',
   hour => '*',
   minute => '*/15',
 }
-
 #class
