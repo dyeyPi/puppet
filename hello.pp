@@ -96,3 +96,5 @@ cron { 'puppet-apply':
 	require => File["my_memory_check"],
 }
 
+#merge master
+
