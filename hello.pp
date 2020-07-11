@@ -73,3 +73,4 @@ cron { 'run-puppet' :
   minute => '*/15',
 }
 
+#class
