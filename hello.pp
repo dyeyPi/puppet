@@ -17,15 +17,16 @@ $packageAttributes = {
   'packages'=> $dependencies,
 }
 
-$required=true
-if $required {
-	package{ $dependencies:
- 		ensure => latest,
-	}
-} else {
-  package { $dependencies :
-		ensure => absent,
-	}
+package{ 'vim-minimal':
+  ensure => latest,
+}
+
+package{ 'curl':
+  ensure => latest,
+}
+
+package{ 'git':
+  ensure => latest,
 }
 
 user { $userId:
@@ -61,6 +62,8 @@ exec{'retrieve_memCheck1':
 
 exec{'retrieve_memCheck2':
   command => "/usr/bin/wget -q ${rawLink} -O ${rawDir}",
+	creates => $rawDir,
+	user => $userId,
 }
 
 file{ $rawDir:
@@ -95,6 +98,4 @@ cron { 'puppet-apply':
 	minute => '10',
 	require => File["my_memory_check"],
 }
-
-#merge master
 
