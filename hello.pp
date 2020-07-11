@@ -6,41 +6,57 @@ $rawLink='https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.s
 $rawFile='memory_check'
 $rawDir="${scriptDir}/${rawFile}"
 
-package{ 'vim-minimal':
-  ensure => latest,
+$dependencies = [
+	'vim-minimal',
+	'curl',
+	'git',
+]
+
+$userAttributes = {
+	'shell' => '\bin\bash',
+	'home' => $userDir,
 }
 
-package{ 'curl':
-  ensure => latest,
+$fileAttributes = {
+	'owner' => $userId,
+	'group' => 'devs',
+	'mode' => 'u+rwx'
 }
 
-package{ 'git':
-  ensure => latest,
+$packageAttributes = {
+	'required' => true,
+  'packages'=> $dependencies,
+}
+
+if $packageAttributes['required'] {
+	package{ $dependencies:
+ 		ensure => installed,
+	}
+} else {
+  package { $dependencies :
+		ensure => absent,
+	}
+}
+
+user { $userId:
+    ensure  =>  present,
+    uid =>  '3001',
+    * => $userAttributes,
 }
 
 group { 'devs':
    gid =>  3000,
 }
 
-user { $userId:
-    ensure  =>  present,
-    uid =>  '3001',
-    shell =>  '/bin/bash',
-    home =>  $userDir,
-}
-
 file { $userDir:
    ensure => directory,
-   owner => $userId,
-   group => 'devs',
-   mode => 0750,
-   require => [User[$userId], Group[devs]]
+	 * => $fileAttributes,
+   require => [User[$userId], Group[devs]],
 }
 
 file{ $scriptDir:
-  mode => 'u+rwx',
   ensure => directory,
-  owner => $userId,
+  * => $fileAttributes,
 }
 
 exec{'retrieve_memCheck1':
@@ -53,17 +69,15 @@ exec{'retrieve_memCheck2':
 }
 
 file{ $rawDir:
-  mode => 'u+rwx',
   ensure => file,
   recurse => true,
-  owner => $userId,
   require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
+	* => $fileAttributes,
 }
 
 file{ $srcDir:
-  mode => 'u+rwx',
   ensure => 'directory',
-  owner => $userId,
+  * => $fileAttributes,
 }
 
 cron { 'run-puppet' :
