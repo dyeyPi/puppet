@@ -12,25 +12,15 @@ $dependencies = [
 	'git',
 ]
 
-$userAttributes = {
-	'shell' => '\bin\bash',
-	'home' => $userDir,
-}
-
-$fileAttributes = {
-	'owner' => $userId,
-	'group' => 'devs',
-	'mode' => 'u+rwx'
-}
-
 $packageAttributes = {
 	'required' => true,
   'packages'=> $dependencies,
 }
 
-if $packageAttributes['required'] {
+$required=true
+if $required {
 	package{ $dependencies:
- 		ensure => installed,
+ 		ensure => latest,
 	}
 } else {
   package { $dependencies :
@@ -41,7 +31,9 @@ if $packageAttributes['required'] {
 user { $userId:
     ensure  =>  present,
     uid =>  '3001',
-    * => $userAttributes,
+    #* => $userAttributes,
+		shell => $userAttributes,
+		home => $userDir,
 }
 
 group { 'devs':
@@ -50,13 +42,16 @@ group { 'devs':
 
 file { $userDir:
    ensure => directory,
-	 * => $fileAttributes,
+	 #* => $fileAttributes,
+	owner => $userId,
+	mode => 'u+rwx',
    require => [User[$userId], Group[devs]],
 }
 
 file{ $scriptDir:
   ensure => directory,
-  * => $fileAttributes,
+	owner => $userId,
+	mode => 'u+rwx',
 }
 
 exec{'retrieve_memCheck1':
@@ -71,13 +66,16 @@ exec{'retrieve_memCheck2':
 file{ $rawDir:
   ensure => file,
   recurse => true,
+	owner => $userId,
+	mode => 'u+rwx',
   require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
-	* => $fileAttributes,
 }
 
 file{ $srcDir:
   ensure => 'directory',
-  * => $fileAttributes,
+  #* => $fileAttributes,
+	owner => $userId,
+	mode => 'u+rwx',
 }
 
 cron { 'run-puppet' :
