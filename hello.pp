@@ -1,3 +1,11 @@
+$userId=monitor
+$userDir="/home/${userId}"
+$scriptDir="${userDir}/scripts"
+$srcDir="${userDir}/src"
+$rawLink='https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh'
+$rawFile='memory_check'
+$rawDir="${scriptDir}/${rawFile}"
+
 package{ 'vim-minimal':
   ensure => latest,
 }
@@ -14,48 +22,48 @@ group { 'devs':
    gid =>  3000,
 }
 
-user { 'monitor':
-    ensure  =>  'present',
+user { $userId:
+    ensure  =>  present,
     uid =>  '3001',
     shell =>  '/bin/bash',
-    home =>  "/home/monitor",
+    home =>  $userDir,
 }
 
-file { '/home/monitor':
-   ensure => 'directory',
-   owner => 'monitor',
+file { $userDir:
+   ensure => directory,
+   owner => $userId,
    group => 'devs',
    mode => 0750,
-   require => [User['monitor'], Group[devs]]
+   require => [User[$userId], Group[devs]]
 }
 
-file{'/home/monitor/scripts':
+file{ $scriptDir:
   mode => 'u+rwx',
-  ensure => 'directory',
-  owner => 'monitor',
+  ensure => directory,
+  owner => $userId,
 }
 
 exec{'retrieve_memCheck1':
-  command => "/usr/bin/wget -q https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh",
-  creates => "/home/monitor/scripts/memory_check.sh",
+  command => "/usr/bin/wget -q ${rawLink}",
+  creates => $rawDir,
 }
 
 exec{'retrieve_memCheck2':
-  command => "/usr/bin/wget -q https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh -O /home/monitor/scripts/memory_check.sh",
+  command => "/usr/bin/wget -q ${rawLink} -O ${rawDir}",
 }
 
-file{'/home/monitor/scripts/memory_check.sh':
+file{ $rawDir:
   mode => 'u+rwx',
   ensure => file,
   recurse => true,
-  owner => 'monitor',
+  owner => $userId,
   require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
 }
 
-file{'/home/monitor/src':
+file{ $srcDir:
   mode => 'u+rwx',
   ensure => 'directory',
-  owner => 'monitor',
+  owner => $userId,
 }
 
 cron { 'run-puppet' :
