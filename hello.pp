@@ -1,13 +1,13 @@
 package{ 'vim-minimal':
-  ensure => present,
+  ensure => latest,
 }
 
 package{ 'curl':
-  ensure => present,
+  ensure => latest,
 }
 
 package{ 'git':
-  ensure => present,
+  ensure => latest,
 }
 
 group { 'devs':
@@ -52,5 +52,16 @@ file{'/home/monitor/scripts/memory_check.sh':
   require => [Exec["retrieve_memCheck1"], Exec["retrieve_memCheck2"]],
 }
 
+file{'/home/monitor/src':
+  mode => 'u+rwx',
+  ensure => 'directory',
+  owner => 'monitor',
+}
 
+cron { 'run-puppet' :
+  command => '/home/monitor/src/my_memory_check',
+  user => 'monitor',
+  hour => '*',
+  minute => '*/15',
+}
 
