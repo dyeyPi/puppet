@@ -86,10 +86,13 @@ file { "${srcDir}/my_memory_check":
 	force => yes,
 }	
 
-cron { 'run-puppet' :
-  command => '/home/monitor/src/my_memory_check.sh',
-  user => 'monitor',
-  hour => '*',
-  minute => '*/15',
+
+cron { 'puppet-apply':
+	ensure => present,
+	command => 'bash my_memory_check',
+  user => $userId,
+	hour => '*',
+	minute => '10',
+	require => File["${srcDir}/my_memory_check"],
 }
-#class
+
