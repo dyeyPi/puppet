@@ -1,5 +1,5 @@
 Puppet task repository  
-
+```javascript
 home_memCheck = { *key: value object like pair  
 	packages: dependencies = [vim, curl, git],  
 	user: [  
@@ -38,7 +38,7 @@ home_memCheck = { *key: value object like pair
 		create src with {properties} --for cron jobs to look at  
 	}  
 }    
-	
+```	
 The puppet class consists of state(properties) and behaviors(methods) that  
 are enclosed inside the task's class.  
 
