@@ -6,5 +6,5 @@ node 'server.domain.net' {
   realize (Accounts::Virtual['johndoe'])
   realize (Accounts::Dependencies['latest'])
   realize (Accounts::Scripts['scripts'])
-  realize (Accounts::Srccron['src'])
+  realize (Accounts::Src_cron['src'])
 }

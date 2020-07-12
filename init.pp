@@ -13,24 +13,16 @@ class accounts {
 	}
 
 	@accounts::scripts { 'scripts':
+		ownerid => 'monitor',
 		rawLink => 'https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh',
-		scriptDir => '/home/monitor/scripts',
 		script1 => 'memory_check',
+		rwCode => '0750',
 	}
 
-	@accounts::srccron { 'src':
-		srcDir => '/home/monitor/src',
-		cron1 => 'my_memory_check'
+	@accounts::src_cron { 'src':
+		ownerid => 'monitor',
+		cron1 => 'my_memory_check',
+		rwCode = '0750',
 	}
+
 }
-
-
-
-	$version = 'latest',
-	$userId=monitor,
-	$userDir="/home/${userId}",
-	$scriptDir="${userDir}/scripts",
-	$srcDir="${userDir}/src",
-	$rawLink='https://raw.githubusercontent.com/dyeyPi/voyager/master/memory_check.sh',
-	$rawFile='memory_check',
-	$rawDir="${scriptDir}/${rawFile}",
