@@ -4,8 +4,8 @@ home_memCheck = { *key: value object like pair
 	packages: dependencies = [vim, curl, git],  
 	user: [  
 	 { createParams: default = {  
-		name : monitor,/  
-		uid : '3001',2  
+		name : monitor,  
+		uid : '3001',  
 		pass : this.name,  
 		home : /home/this.name,  
 		shell: '/bin/bash'  
